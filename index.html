@@ -132,15 +132,37 @@
       const [role, setRole] = useState('parent');
       const [activeTab, setActiveTab] = useState('parent-portal');
       const [schoolInfo, setSchoolInfo] = useState(DEFAULT_SCHOOL_INFO);
-      const [currentAcademicYear, setCurrentAcademicYear] = useState('2025-2026');
-      const [academicYears, setAcademicYears] = useState(DEFAULT_ACADEMIC_YEARS);
-      const [classList, setClassList] = useState(DEFAULT_CLASSES);
-      const [subjectsConfig, setSubjectsConfig] = useState(DEFAULT_SUBJECTS_CONFIG);
-      const [students, setStudents] = useState(INITIAL_STUDENTS);
-      const [results, setResults] = useState(INITIAL_RESULTS);
-      // attendance: { "2026-10-27_Class 10_A": { "STU-1001": true, "STU-1002": false, ... } }
-      const [attendance, setAttendance] = useState({});
+      const [currentAcademicYear, setCurrentAcademicYear] = useState(() => {
+        try { return localStorage.getItem('atps_currentYear') || '2025-2026'; } catch { return '2025-2026'; }
+      });
+      const [academicYears, setAcademicYears] = useState(() => {
+        try { const s = localStorage.getItem('atps_academicYears'); return s ? JSON.parse(s) : DEFAULT_ACADEMIC_YEARS; } catch { return DEFAULT_ACADEMIC_YEARS; }
+      });
+      const [classList, setClassList] = useState(() => {
+        try { const s = localStorage.getItem('atps_classList'); return s ? JSON.parse(s) : DEFAULT_CLASSES; } catch { return DEFAULT_CLASSES; }
+      });
+      const [subjectsConfig, setSubjectsConfig] = useState(() => {
+        try { const s = localStorage.getItem('atps_subjectsConfig'); return s ? JSON.parse(s) : DEFAULT_SUBJECTS_CONFIG; } catch { return DEFAULT_SUBJECTS_CONFIG; }
+      });
+      const [students, setStudents] = useState(() => {
+        try { const s = localStorage.getItem('atps_students'); return s ? JSON.parse(s) : INITIAL_STUDENTS; } catch { return INITIAL_STUDENTS; }
+      });
+      const [results, setResults] = useState(() => {
+        try { const s = localStorage.getItem('atps_results'); return s ? JSON.parse(s) : INITIAL_RESULTS; } catch { return INITIAL_RESULTS; }
+      });
+      const [attendance, setAttendance] = useState(() => {
+        try { const s = localStorage.getItem('atps_attendance'); return s ? JSON.parse(s) : {}; } catch { return {}; }
+      });
       const [toast, setToast] = useState(null);
+
+      // Auto-save to browser localStorage (persists after refresh)
+      useEffect(() => { try { localStorage.setItem('atps_students', JSON.stringify(students)); } catch(e){} }, [students]);
+      useEffect(() => { try { localStorage.setItem('atps_results', JSON.stringify(results)); } catch(e){} }, [results]);
+      useEffect(() => { try { localStorage.setItem('atps_attendance', JSON.stringify(attendance)); } catch(e){} }, [attendance]);
+      useEffect(() => { try { localStorage.setItem('atps_classList', JSON.stringify(classList)); } catch(e){} }, [classList]);
+      useEffect(() => { try { localStorage.setItem('atps_subjectsConfig', JSON.stringify(subjectsConfig)); } catch(e){} }, [subjectsConfig]);
+      useEffect(() => { try { localStorage.setItem('atps_academicYears', JSON.stringify(academicYears)); } catch(e){} }, [academicYears]);
+      useEffect(() => { try { localStorage.setItem('atps_currentYear', currentAcademicYear); } catch(e){} }, [currentAcademicYear]);
 
       const showToast = (message, type = 'success') => {
         setToast({ message, type });
